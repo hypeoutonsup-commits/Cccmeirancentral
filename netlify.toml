@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# React Router handles these paths in the browser. Without this rewrite,
+# a refresh on /community, /donate, and the other routes returns 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
