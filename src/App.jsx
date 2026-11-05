@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { Home, Users, Trophy, Heart, MoreHorizontal } from "lucide-react";
 import { AuthProvider } from "./context/AuthContext";

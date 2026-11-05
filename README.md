@@ -25,7 +25,9 @@ Build settings live in `netlify.toml`:
 - Publish directory: `dist`
 - Node: 22
 
-Client-side routes (`/community`, `/donate`, and the rest) rewrite to `index.html` so a refresh does not 404.
+Client-side routes (`/community`, `/donate`, and the rest) rewrite to `index.html` so a refresh does not 404. The same rule is in `public/_redirects`, which Vite copies into `dist/`, and `npm run build` also copies `index.html` to `dist/404.html`.
+
+Netlify’s production branch has to be the branch that contains `vite.config.js`. A build of `main` without that file still succeeds, then the live page stays blank: JSX is compiled to `React.createElement` and the components never import `React`. After this change is on the branch Netlify builds, open the site in Netlify and choose **Trigger deploy → Deploy site**.
 
 ### Continuous deployment
 

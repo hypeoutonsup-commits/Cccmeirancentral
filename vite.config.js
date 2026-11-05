@@ -3,5 +3,10 @@ import react from "@vitejs/plugin-react";
 import netlify from "@netlify/vite-plugin";
 
 export default defineConfig({
-  plugins: [react(), netlify()],
+  base: "/",
+  plugins: [react({ jsxRuntime: "automatic" }), netlify()],
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+  },
 });
