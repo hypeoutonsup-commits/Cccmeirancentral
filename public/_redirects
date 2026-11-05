@@ -1,2 +1,6 @@
+# Firebase Auth handler, served from this Netlify domain.
+/__/auth/*      https://ccc-meiran-central-parish.web.app/__/auth/:splat      200
+/__/firebase/*  https://ccc-meiran-central-parish.web.app/__/firebase/:splat  200
+
 # Client-side routes (React Router). Existing files such as /assets/* are served as-is.
 /*    /index.html   200

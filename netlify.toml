@@ -5,6 +5,20 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Google sign-in loads /__/auth/handler on authDomain. These rules proxy that
+# helper through the Netlify domain before the app rewrite below.
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://ccc-meiran-central-parish.web.app/__/auth/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/__/firebase/*"
+  to = "https://ccc-meiran-central-parish.web.app/__/firebase/:splat"
+  status = 200
+  force = true
+
 # React Router handles these paths in the browser. Without this rewrite,
 # a refresh on /community, /donate, and the other routes returns 404.
 [[redirects]]
