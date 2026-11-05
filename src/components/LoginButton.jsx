@@ -6,7 +6,7 @@ const touchTarget =
   "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto";
 
 export default function LoginButton() {
-  const { user, loginWithGoogle, logout, authError, signingIn } = useAuth();
+  const { user, loginWithGoogle, logout, signingIn } = useAuth();
 
   if (user) {
     return (
@@ -27,11 +27,6 @@ export default function LoginButton() {
         <LogIn size={18} aria-hidden="true" />
         {signingIn ? "Opening Google…" : "Google Login"}
       </button>
-      {authError && (
-        <p role="alert" className="max-w-sm text-left text-xs leading-relaxed text-red-600 sm:text-right">
-          {authError}
-        </p>
-      )}
     </div>
   );
 }
