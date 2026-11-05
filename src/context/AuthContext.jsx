@@ -10,8 +10,13 @@ import {
 
 const AuthContext = createContext();
 
+const REDIRECT_FLAG = "ccc-google-redirect";
+
 function describeAuthError(error) {
   const code = error?.code || "";
+  if (code === "auth/configuration-not-found") {
+    return "Google sign-in is not turned on for this Firebase project yet. In Firebase Console open Authentication, choose Get started, enable Google, and add storied-lolly-6530f1.netlify.app under Authorized domains.";
+  }
   if (code === "auth/unauthorized-domain") {
     return "Google sign-in is not allowed on this domain yet. In Firebase, open Authentication, then Settings, then Authorized domains, and add this site's domain.";
   }
@@ -45,10 +50,14 @@ export function AuthProvider({ children }) {
     let cancelled = false;
 
     async function listen() {
-      try {
-        await getRedirectResult(auth);
-      } catch (error) {
-        if (!cancelled) setAuthError(describeAuthError(error));
+      const pendingRedirect = sessionStorage.getItem(REDIRECT_FLAG) === "1";
+      if (pendingRedirect) {
+        sessionStorage.removeItem(REDIRECT_FLAG);
+        try {
+          await getRedirectResult(auth);
+        } catch (error) {
+          if (!cancelled) setAuthError(describeAuthError(error));
+        }
       }
       if (cancelled) return;
       unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -73,7 +82,13 @@ export function AuthProvider({ children }) {
 
     const startRedirect = async () => {
       redirectInFlight.current = true;
-      await signInWithRedirect(auth, googleProvider);
+      sessionStorage.setItem(REDIRECT_FLAG, "1");
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (error) {
+        sessionStorage.removeItem(REDIRECT_FLAG);
+        throw error;
+      }
     };
 
     try {

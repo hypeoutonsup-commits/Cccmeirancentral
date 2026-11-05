@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import Leaderboard from "../components/Leaderboard";
 
 const SAMPLE_QUESTIONS = [
@@ -10,7 +11,9 @@ const SAMPLE_QUESTIONS = [
 ];
 
 export default function GamePage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("Practice");
+  const [contestNotice, setContestNotice] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
@@ -19,6 +22,11 @@ export default function GamePage() {
   const [shuffledOptions, setShuffledOptions] = useState([]);
 
   const startGame = () => {
+    if (activeTab === "Contests" && !user) {
+      setContestNotice("Only logged-in members can join a contest. Practice is open to everyone.");
+      return;
+    }
+    setContestNotice("");
     setGameActive(true);
     setCurrentQuestion(0);
     setScore(0);
@@ -78,7 +86,7 @@ export default function GamePage() {
 
       <div className="flex gap-2 p-3 bg-gray-50 border-b">
         {["Contests", "Practice", "Leaderboard"].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-1.5 rounded-full text-sm ${activeTab === tab ? "bg-primary text-white" : "bg-white border"}`}>
+          <button key={tab} onClick={() => { setActiveTab(tab); setGameActive(false); setEliminated(false); setContestNotice(""); }} className={`px-4 py-1.5 rounded-full text-sm ${activeTab === tab ? "bg-primary text-white" : "bg-white border"}`}>
             {tab}
           </button>
         ))}
@@ -89,8 +97,9 @@ export default function GamePage() {
       {(activeTab === "Practice" || activeTab === "Contests") && !gameActive && !eliminated && (
         <div className="p-6 text-center">
           <p className="mb-4 text-gray-600">
-            {activeTab === "Practice" ? "Practice anytime" : "Play a contest round"}
+            {activeTab === "Practice" ? "Anyone can play practice." : "Only logged-in members can join a contest."}
           </p>
+          {contestNotice && <p role="alert" className="mb-4 text-sm text-red-600">{contestNotice}</p>}
           <button type="button" onClick={startGame} className="min-h-11 bg-primary text-white px-8 py-3 rounded-full">Start Play</button>
         </div>
       )}
