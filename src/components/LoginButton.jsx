@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { handleGoogleLogin } from "../firebase/auth";
 import { LogIn, LogOut } from "lucide-react";
 
 const touchTarget =
   "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto";
 
 export default function LoginButton() {
-  const { user, loginWithGoogle, logout, signingIn } = useAuth();
+  const { user, logout } = useAuth();
+  const [signingIn, setSigningIn] = useState(false);
+
+  const onGoogleLogin = async () => {
+    if (signingIn) return;
+    setSigningIn(true);
+    try {
+      await handleGoogleLogin();
+    } finally {
+      setSigningIn(false);
+    }
+  };
 
   if (user) {
     return (
@@ -20,7 +32,7 @@ export default function LoginButton() {
     <div className="flex w-full flex-col items-stretch gap-2 sm:items-end">
       <button
         type="button"
-        onClick={loginWithGoogle}
+        onClick={onGoogleLogin}
         disabled={signingIn}
         className={`${touchTarget} bg-primary text-white focus-visible:outline-primary disabled:opacity-70`}
       >

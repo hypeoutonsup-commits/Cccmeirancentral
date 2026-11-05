@@ -1,39 +1,25 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, googleProvider } from "../firebase/config";
-import {
-  getRedirectResult,
-  onAuthStateChanged,
-  signInWithPopup,
-  signInWithRedirect,
-  signOut,
-} from "firebase/auth";
+import { getRedirectResult, onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../firebase/config";
+import { GOOGLE_REDIRECT_FLAG } from "../firebase/auth";
 
 const AuthContext = createContext();
-const REDIRECT_FLAG = "ccc-google-redirect";
-
-const POPUP_FALLBACK_CODES = new Set([
-  "auth/popup-blocked",
-  "auth/popup-closed-by-user",
-  "auth/cancelled-popup-request",
-  "auth/operation-not-supported-in-this-environment",
-]);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
     let unsubscribe = () => {};
     let cancelled = false;
 
     async function listen() {
-      if (sessionStorage.getItem(REDIRECT_FLAG) === "1") {
-        sessionStorage.removeItem(REDIRECT_FLAG);
+      if (sessionStorage.getItem(GOOGLE_REDIRECT_FLAG) === "1") {
+        sessionStorage.removeItem(GOOGLE_REDIRECT_FLAG);
         try {
           await getRedirectResult(auth);
         } catch (error) {
-          console.error("Google redirect sign-in failed", error);
+          console.error("Authentication failed completely:", error);
         }
       }
       if (cancelled) return;
@@ -50,36 +36,16 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  const loginWithGoogle = async () => {
-    if (signingIn) return;
-    setSigningIn(true);
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (popupError) {
-      console.error("Google popup sign-in failed", popupError);
-      if (!POPUP_FALLBACK_CODES.has(popupError?.code)) return;
-      try {
-        sessionStorage.setItem(REDIRECT_FLAG, "1");
-        await signInWithRedirect(auth, googleProvider);
-      } catch (redirectError) {
-        sessionStorage.removeItem(REDIRECT_FLAG);
-        console.error("Google redirect sign-in failed", redirectError);
-      }
-    } finally {
-      setSigningIn(false);
-    }
-  };
-
   const logout = async () => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error("Sign-out failed", error);
+      console.error("Authentication failed completely:", error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signingIn, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );
