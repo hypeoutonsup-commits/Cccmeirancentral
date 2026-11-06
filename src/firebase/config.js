@@ -2,10 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { FIREBASE_AUTH_DOMAIN } from "./domain.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAmvzdE-d1LjI4hYLHgXhQX7t-6vky96FY",
-  authDomain: "ccc-meiran-central-parish.firebaseapp.com",
+  authDomain: FIREBASE_AUTH_DOMAIN,
   projectId: "ccc-meiran-central-parish",
   storageBucket: "ccc-meiran-central-parish.firebasestorage.app",
   messagingSenderId: "593169000634",
