@@ -5,7 +5,7 @@ import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAmvzdE-d1LjI4hYLHgXhQX7t-6vky96FY",
-  authDomain: "storied-lolly-6530f1.netlify.app",
+  authDomain: "ccc-meiran-central-parish.firebaseapp.com",
   projectId: "ccc-meiran-central-parish",
   storageBucket: "ccc-meiran-central-parish.firebasestorage.app",
   messagingSenderId: "593169000634",
