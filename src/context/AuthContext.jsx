@@ -2,12 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { getRedirectResult, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { GOOGLE_REDIRECT_FLAG } from "../firebase/auth";
+import { ensureOwnerRecord } from "../firebase/seedOwner";
+import { isOwnerEmail, OWNER_PERMISSIONS } from "../firebase/roles";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     let unsubscribe = () => {};
@@ -25,7 +28,14 @@ export function AuthProvider({ children }) {
       if (cancelled) return;
       unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         setUser(currentUser);
+        const owner = isOwnerEmail(currentUser?.email);
+        setRole(owner ? "owner" : null);
         setLoading(false);
+        if (owner) {
+          ensureOwnerRecord(currentUser).catch((error) => {
+            console.error("Could not save owner record:", error);
+          });
+        }
       });
     }
 
@@ -45,7 +55,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, role, isOwner: role === "owner", permissions: role === "owner" ? OWNER_PERMISSIONS : {} }}>
       {children}
     </AuthContext.Provider>
   );

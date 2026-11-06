@@ -4,7 +4,7 @@ import { db } from "../firebase/config";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 
 export default function DonatePage() {
-  const { user } = useAuth();
+  const { user, isOwner } = useAuth();
   const [activeTab, setActiveTab] = useState("Offering");
   const [needs, setNeeds] = useState([]);
   const [newNeed, setNewNeed] = useState({ title: "", description: "", goal: "" });
@@ -58,7 +58,7 @@ export default function DonatePage() {
 
       {activeTab === "Needs" && (
         <div className="p-4">
-          {user?.email === "istobasam23@gmail.com" && (
+          {isOwner && (
             <div className="bg-white p-4 rounded-xl border mb-4">
               <p className="font-medium text-sm mb-2">Create Need (Admin)</p>
               <input placeholder="Title" value={newNeed.title} onChange={e => setNewNeed({...newNeed, title: e.target.value})} className="w-full border rounded px-3 py-2 mb-2 text-sm" />

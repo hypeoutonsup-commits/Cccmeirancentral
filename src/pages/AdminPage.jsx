@@ -14,11 +14,9 @@ const PERMISSIONS = [
 ];
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  const { user, isOwner } = useAuth();
   const [selectedAdmin, setSelectedAdmin] = useState("");
   const [permissions, setPermissions] = useState({});
-
-  const isOwner = user?.email === "istobasam23@gmail.com";
 
   const togglePermission = (permId) => {
     setPermissions(prev => ({ ...prev, [permId]: !prev[permId] }));
